@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Keislaman</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            /* GANTI URL DI BAWAH INI DENGAN LINK FOTO ANDA */
+            background-image: url('bg ai.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
+        .glass-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 2px solid #10b981;
+        }
+        .chat-container { 
+            height: calc(100dvh - 160px); 
+            scrollbar-width: none;
+        }
+        .chat-container::-webkit-scrollbar { display: none; }
+        
+        .message-animate { 
+            animation: slideUp 0.3s ease-out forwards; 
+        }
+        @keyframes slideUp { 
+            from { opacity: 0; transform: translateY(15px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        .prose-content a {
+            color: #059669;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+        
+        .search-pulse {
+            animation: pulse-bg 1.5s infinite;
+        }
+        @keyframes pulse-bg {
+            0% { background-color: rgba(236, 253, 245, 0.9); }
+            50% { background-color: rgba(209, 250, 229, 0.9); }
+            100% { background-color: rgba(236, 253, 245, 0.9); }
+        }
+
+        input:focus { font-size: 16px !important; }
+    </style>
+</head>
+<body class="text-slate-900 overflow-hidden">
+
+    <div class="max-w-5xl mx-auto h-screen flex flex-col">
+        <!-- Header -->
+        <header class="glass-header px-4 py-4 md:px-8 flex items-center justify-between shadow-sm sticky top-0 z-10">
+            <div class="flex items-center gap-4">
+                <div class="bg-emerald-600 p-2 md:p-3 rounded-2xl text-white shadow-lg">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                </div>
+                <div>
+                    <h1 class="font-bold text-emerald-950 text-base md:text-xl tracking-tight">Tanya Santri AI Aswaja</h1>
+                    <p class="text-[10px] md:text-xs text-emerald-600 font-bold uppercase tracking-widest opacity-80">Ahlussunnah Wal Jama'ah</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Chat Area -->
+        <div id="chat-window" class="chat-container flex-grow overflow-y-auto p-4 md:p-8 space-y-6">
+            <div class="flex justify-start message-animate">
+                <div class="bg-white border border-emerald-100 p-5 md:p-6 rounded-3xl rounded-tl-none shadow-md max-w-[90%] md:max-w-[70%]">
+                    <p class="text-sm md:text-base leading-relaxed text-slate-700">
+                        <span class="block font-bold text-emerald-800 text-lg mb-1">Assalamu'alaikum Warahmatullahi Wabarakatuh.</span>
+                        Selamat datang di layanan konsultasi agama digital. Kami siap membantu Anda menjawab persoalan hukum Islam, Fiqih, Aqidah, maupun Akhlak dengan rujukan kitab-kitab muktabar. Apa yang ingin Anda tanyakan hari ini?
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Area Input -->
+        <div class="p-4 md:p-6 bg-white/70 backdrop-blur-md border-t border-emerald-100">
+            <div class="max-w-4xl mx-auto relative">
+                <div id="loading-indicator" class="hidden absolute -top-14 left-0 right-0 flex justify-center">
+                    <div class="search-pulse flex items-center gap-3 px-4 py-2 rounded-2xl border border-emerald-200 shadow-sm">
+                        <div class="flex gap-1">
+                            <div class="w-1.5 h-1.5 bg-emerald-600 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                            <div class="w-1.5 h-1.5 bg-emerald-600 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                            <div class="w-1.5 h-1.5 bg-emerald-600 rounded-full animate-bounce" style="animation-delay: 0.3s"></div>
+                        </div>
+                        <span class="text-[11px] md:text-xs font-bold text-emerald-800 italic uppercase tracking-wider">Mutholaah Kitab dulu...</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-2 md:gap-4">
+                    <div class="flex-grow bg-white border-2 border-emerald-100 rounded-2xl md:rounded-3xl shadow-lg focus-within:border-emerald-500 transition-all px-2 py-1 flex items-center">
+                        <input type="text" id="user-input" 
+                            class="flex-grow bg-transparent p-3 md:p-4 outline-none text-sm md:text-base font-medium" 
+                            placeholder="Ketik pertanyaan Anda di sini..."
+                            onkeypress="handleKeyPress(event)"
+                            autocomplete="off">
+                    </div>
+                    
+                    <button onclick="sendMessage()" id="send-btn"
+                        class="bg-emerald-700 hover:bg-emerald-800 text-white w-12 h-12 md:w-16 md:h-16 rounded-2xl md:rounded-3xl flex items-center justify-center transition-all active:scale-90 shadow-xl shrink-0">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="md:w-7 md:h-7"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = "AIzaSyCCjlW9k1opcZXr6SrF-QvceECkGAJiWKg"; 
+
+        async function sendMessage() {
+            const inputField = document.getElementById('user-input');
+            const query = inputField.value.trim();
+            if (!query) return;
+
+            appendMessage('user', query);
+            inputField.value = '';
+
+            // LOGIKA ADAPTIF: Cek apakah input mengandung kata tanya atau butuh referensi
+            const keywords = ['tanya', 'apa', 'bagaimana', 'bolehkah', 'hukum', 'mana', 'siapa', 'kapan', 'dalil', 'kitab', 'referensi', 'minta', 'jelaskan'];
+            const needsReference = keywords.some(word => query.toLowerCase().includes(word));
+
+            if (needsReference) {
+                toggleLoading(true);
+            }
+
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=${apiKey}`;
+
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{
+                            parts: [{ 
+                                text: `Anda adalah pakar agama Islam Ahlussunah Wal Jama'ah (Aswaja) yang ramah dan adaptif.
+                                
+                                MODE OPERASI:
+                                1. Jika pengguna hanya menyapa (Salam, Halo, Apa kabar, dll) atau mengobrol santai tanpa bertanya masalah agama, jawablah dengan sangat ramah, santun, dan manusiawi sebagai seorang Santri/Ustadz tanpa perlu mencari referensi kitab.
+                                2. Jika pengguna BERTANYA tentang hukum, agama, atau meminta penjelasan ilmiah (mengandung kata: ${keywords.join(', ')}), barulah Anda masuk ke mode Pakar dan wajib mengikuti aturan referensi di bawah ini.
+                                
+                                KEBIJAKAN SUMBER (HANYA JIKA BERTANYA AGAMA):
+                                1. Cari dan gunakan referensi HANYA dari: https://www.piss-ktb.com, https://shamela.ws, dan nu.or.id.
+                                2. Wajib sertakan link URL referensi di bagian akhir.
+                                
+                                ATURAN PENYAJIAN (UNTUK JAWABAN AGAMA):
+                                - Sajikan poin per poin.
+                                - Kutipan Arab wajib teks asli (tanpa transliterasi) + Terjemahan di bawahnya.
+                                - JANGAN gunakan simbol markdown seperti # atau *.
+                                - Gunakan baris baru.
+                                
+                                Pertanyaan/Obrolan: ${query}` 
+                            }]
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.error) throw new Error(data.error.message);
+
+                if (data.candidates && data.candidates[0]?.content?.parts?.[0]?.text) {
+                    const botResponse = data.candidates[0].content.parts[0].text;
+                    appendMessage('bot', botResponse);
+                } else {
+                    appendMessage('bot', "Maaf, kami tidak menemukan rujukan yang sesuai.");
+                }
+
+            } catch (error) {
+                console.error(error);
+                appendMessage('bot', "Mohon maaf, terjadi gangguan teknis. Silakan coba beberapa saat lagi.");
+            } finally {
+                toggleLoading(false);
+            }
+        }
+
+        function appendMessage(role, text) {
+            const chatWindow = document.getElementById('chat-window');
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} message-animate`;
+            
+            const contentClass = role === 'user' 
+                ? 'bg-emerald-700 text-white rounded-3xl rounded-tr-none shadow-lg' 
+                : 'bg-white border border-emerald-50 rounded-3xl rounded-tl-none shadow-md';
+
+            let cleanText = text.replace(/[#*]/g, '').trim();
+
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            const formattedText = cleanText.replace(/\n/g, '<br>').replace(urlRegex, function(url) {
+                return `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+            });
+
+            wrapper.innerHTML = `
+                <div class="${contentClass} p-4 md:p-6 max-w-[92%] md:max-w-[80%] text-left">
+                    <div class="text-sm md:text-[15px] leading-relaxed prose-content">${formattedText}</div>
+                </div>
+            `;
+            
+            chatWindow.appendChild(wrapper);
+            chatWindow.scrollTo({ top: chatWindow.scrollHeight, behavior: 'smooth' });
+        }
+
+        function toggleLoading(show) {
+            const indicator = document.getElementById('loading-indicator');
+            if (show) {
+                indicator.classList.remove('hidden');
+            } else {
+                indicator.classList.add('hidden');
+            }
+            document.getElementById('send-btn').disabled = show;
+            document.getElementById('send-btn').style.opacity = show ? '0.7' : '1';
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+    </script>
+</body>
+</html>
